@@ -9,6 +9,11 @@ import axios from "axios";
 const Game = () => {
     const [loading, setLoading] = useState(false);
     const [hideIndex, setHideIndex] = useState([]);
+    const [min , setMin] = useState(5);
+    const [sec  , setSec] = useState(0);
+    const [startTimer , setStartTimer] = useState(false);
+    let startTime;
+    let timer;
     // const [sentence , setSentence] = useState("");
     // setSentence("We design and develop applications that run the world and showcase the future");
     const sentence =
@@ -34,15 +39,71 @@ const Game = () => {
 
     useEffect(() => {
         setLoading(true);
+
+        // axios.get("http://localhost:8000/api/v1/sentence")
+        // .then((res) => {
+        //     sentence = res.data.sentence;
+        // })
+        // .error((err) => {
+        //     console.log(err);
+        // })
+
         displaySentence();
         setLoading(false);
     }, []);
 
-function submitHandler(e) {
-    e.preventDefault();
-    let enteredSentence = hideIndex.filter((hide) => (hide))
-    axios.post("http://localhost:8000/api/v1/result" , )
-}
+
+    function stopTimer() {
+        clearInterval(timer);
+        setStartTimer(false);
+
+        // submitting the result
+        submitHandler();
+
+    }
+    function gameStart() {
+        if(sec===0) {
+            if(min === 1) {
+                stopTimer();
+                return;
+            }
+            setSec(60);
+            setMin(min-1);
+        }else{
+            setSec(sec-1);
+        }
+    }
+    function clickHandler(){
+        console.log("hello")
+        if(startTimer) {
+            return
+        }
+        setStartTimer(true);
+        startTime = new Date();
+        timer = setInterval(gameStart,1000)
+    }
+
+    function submitHandler() {
+        let enteredSentence = hideIndex.filter((hide) => (hide))
+        const score = enteredSentence.length === sentence.length
+        const timeTaken = (new Date() - startTime)/60000;
+        setLoading(true)
+        axios.post("http://localhost:8000/api/v1/result" , {
+            score : score,
+            timeTaken : timeTaken,
+        })
+        .then((res) => {
+                alert(res.data.message);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(()=>{
+            setLoading(false);
+        })
+    }
+
+
     return (
         <div>
             {loading ? (
@@ -67,7 +128,7 @@ function submitHandler(e) {
                                     </span>
                                 </div>
                                 <div className="text-[#f5ca2f]">
-                                    <span className="text-[25px]">1:30</span>{" "}
+                                    <span className="text-[25px]">{min}:{sec}</span>{" "}
                                     min
                                 </div>
                             </div>
@@ -76,6 +137,7 @@ function submitHandler(e) {
                             {sentence.split("").map((char, index) => {
                                 return (
                                     <Square
+                                        onClick= {clickHandler}
                                         key={index}
                                         char={char}
                                         isDisplay={hideIndex[index]}

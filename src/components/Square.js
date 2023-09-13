@@ -6,6 +6,7 @@ const Square = ({char ,key, isDisplay , hideIndex , setHideIndex ,sentence}) => 
     function onChangeHandler(e) {
         console.log(sentence);
         let alpha = e.target.value;
+        console.log(alpha);
         let newHideIndex = hideIndex;
 
         console.log(e.target.value);
@@ -16,6 +17,7 @@ const Square = ({char ,key, isDisplay , hideIndex , setHideIndex ,sentence}) => 
             return;
         }
         newHideIndex[key] = true;
+        console.log(newHideIndex[key]);
         setHideIndex(newHideIndex);
         if(alpha === sentence[key]) {
             setBackColor("[#2d9738]");
@@ -27,7 +29,7 @@ const Square = ({char ,key, isDisplay , hideIndex , setHideIndex ,sentence}) => 
     }
   return (
     <input onChange={onChangeHandler}
-     type="text" value={isDisplay?char:""} className={`bg-${backColor} m-2 p-2 w-[3vw] text-center ${isDisplay ?"pointer-events-none" : "pointer-events-auto"} rounded-md text-black`}/>
+     type="text" value={isDisplay?char.toUpperCase():""} className={`bg-${backColor} m-2 p-2 w-[3vw] text-center ${isDisplay ?"pointer-events-none" : "pointer-events-auto"} rounded-md text-black`}/>
   );
 };
 
